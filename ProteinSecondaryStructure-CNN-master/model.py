@@ -61,15 +61,15 @@ checkpoint = callbacks.ModelCheckpoint(filepath, monitor='val_acc', verbose=1, s
 ##
 def CNN_model():
     m = Sequential()
-    m.add(Conv1D(128, 5, padding='same', activation='relu', input_shape=(dataset.cnn_width, dataset.amino_acid_residues)))
+    m.add(Conv1D(256, 7, padding='same', activation='relu', input_shape=(dataset.cnn_width, dataset.amino_acid_residues)))
     m.add(BatchNormalization())
     # m.add(MaxPooling1D(pool_size=2))
     m.add(Dropout(drop_out))
-    m.add(Conv1D(128, 3, padding='same', activation='relu'))
+    m.add(Conv1D(128, 5, padding='same', activation='relu'))
     m.add(BatchNormalization())
     # m.add(MaxPooling1D(pool_size=2))
     m.add(Dropout(drop_out))
-    m.add(Conv1D(64, 3, padding='same', activation='relu'))
+    m.add(Conv1D(64, 5, padding='same', activation='relu'))
     m.add(BatchNormalization())
     # m.add(MaxPooling1D(pool_size=2))
     m.add(Dropout(drop_out))
