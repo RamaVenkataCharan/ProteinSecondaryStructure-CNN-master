@@ -43,13 +43,14 @@ else:
 end_time = timer()
 print("\n\nTime elapsed getting Dataset: " + "{0:.2f}".format((end_time - start_time)) + " s")
 
-net = model.CNN_model()
+from tensorflow.keras.models import load_model
 
-#load Weights
 if filtered:
-    net.load_weights("Best Models/CullPDB6133_Filtered-best - 0.6833.hdf5")
+    net = load_model("Best Models/CullPDB6133_Filtered-best - 0.6833.hdf5", compile=False)
 else:
-    net.load_weights("Best Models/CullPDB6133-best - 0.721522.hdf5")
+    net = load_model("Best Models/CullPDB6133-best - 0.721522.hdf5", compile=False)
+
+net.compile(loss='categorical_crossentropy', metrics=['accuracy', 'mae'])
 
 scores = net.evaluate(X_test, Y_test)
 #print(scores)

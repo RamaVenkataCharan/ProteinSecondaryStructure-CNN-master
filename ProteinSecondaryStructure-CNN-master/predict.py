@@ -37,8 +37,7 @@ def predict_structure(sequence, model_path=None):
     if model_path is None:
         model_path = "Best Models/CullPDB6133_Filtered-best - 0.6833.hdf5" if is_filtered() else "Best Models/CullPDB6133-best - 0.721522.hdf5"
         
-    net = cnn_model.CNN_model()
-    net.load_weights(model_path)
+    net = load_model(model_path, compile=False)
     
     encoded_seq = encode_sequence(sequence)
     windows = window_sequence(encoded_seq)
