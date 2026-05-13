@@ -46,7 +46,10 @@ print("\n\nTime elapsed getting Dataset: " + "{0:.2f}".format((end_time - start_
 net = model.CNN_model()
 
 #load Weights
-net.load_weights("NewModelConvConv-best.hdf5")
+if filtered:
+    net.load_weights("Best Models/CullPDB6133_Filtered-best - 0.6833.hdf5")
+else:
+    net.load_weights("Best Models/CullPDB6133-best - 0.721522.hdf5")
 
 scores = net.evaluate(X_test, Y_test)
 #print(scores)

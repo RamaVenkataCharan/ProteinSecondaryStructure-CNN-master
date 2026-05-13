@@ -52,7 +52,7 @@ if dataset.filtered:
 else:
     filepath="CullPDB6133-best.hdf5"
 
-checkpoint = callbacks.ModelCheckpoint(filepath, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
+checkpoint = callbacks.ModelCheckpoint(filepath, monitor='val_accuracy', verbose=1, save_best_only=True, mode='max')
 
 ##
 ## @brief       Builds and returns the CNN model (Keras Sequential model). If do_summary, prints the model summary.
@@ -81,7 +81,7 @@ def CNN_model():
     m.add(Dense(128, activation='relu'))
     m.add(Dense(32, activation='relu'))
     m.add(Dense(dataset.num_classes, activation = 'softmax'))
-    opt = optimizers.Adam(lr=LR)
+    opt = optimizers.Adam(learning_rate=LR)
     m.compile(optimizer=opt,
               loss=loss,
               metrics=['accuracy', 'mae'])

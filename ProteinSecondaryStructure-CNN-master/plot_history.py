@@ -30,12 +30,13 @@ import matplotlib.pyplot as plt
 ##
 def plot_history(history):
     # summarize history for accuracy
-    plt.plot(history.history['acc'])
-    plt.plot(history.history['val_acc'])
+    plt.plot(history.history['accuracy'])
+    plt.plot(history.history['val_accuracy'])
     plt.title('model accuracy')
     plt.ylabel('accuracy')
     plt.xlabel('epoch')
     plt.legend(['train', 'validation'], loc='upper left')
+    plt.savefig('accuracy_curve.png')
     plt.show()
     # summarize history for loss
     plt.plot(history.history['loss'])
@@ -44,6 +45,7 @@ def plot_history(history):
     plt.ylabel('loss')
     plt.xlabel('epoch')
     plt.legend(['train', 'validation'], loc='upper left')
+    plt.savefig('loss_curve.png')
     plt.show()
     # summarize history for error
     plt.plot(history.history['mean_absolute_error'])

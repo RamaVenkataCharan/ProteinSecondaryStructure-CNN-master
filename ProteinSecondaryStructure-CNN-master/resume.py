@@ -24,7 +24,7 @@ import numpy as np
 from time import time
 from tensorflow.keras import optimizers, callbacks
 from timeit import default_timer as timer
-from dataset import get_dataset_reshaped, split_dataset, get_resphaped_dataset_paper, get_cb513
+from dataset import get_dataset_reshaped, split_dataset, get_resphaped_dataset_paper, get_cb513, is_filtered
 import model
 
 import pickle
@@ -54,7 +54,10 @@ if filtered:
 
 net = model.CNN_model()
 
-net.load_weights("NewModelConvConv-best.hdf5") #wheights of the saved model
+if filtered:
+    net.load_weights("Best Models/CullPDB6133_Filtered-best - 0.6833.hdf5")
+else:
+    net.load_weights("Best Models/CullPDB6133-best - 0.721522.hdf5")
 
 start_time = timer()
 
