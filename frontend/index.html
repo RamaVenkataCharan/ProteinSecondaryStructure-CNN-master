@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ProteinFold AI — Secondary Structure Predictor</title>
+  <meta name="description" content="Predict protein secondary structure (Q8) from amino acid sequences using a Convolutional Neural Network. Visualize alpha helices, beta sheets, and coil regions interactively." />
+  <meta name="keywords" content="protein, secondary structure, CNN, bioinformatics, Q8, prediction, deep learning" />
+  <meta name="author" content="Rama Venkata Charan" />
+  <meta name="theme-color" content="#0a0e1a" />
+
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧬</text></svg>" />
+  <link rel="stylesheet" href="index.css" />
+</head>
+<body>
+
+  <!-- ============ NAVBAR ============ -->
+  <nav class="navbar" id="navbar">
+    <div class="container nav-inner">
+      <a href="#" class="nav-logo">
+        <span class="logo-icon">🧬</span>
+        <span>Protein<span class="gradient-text">Fold</span></span>
+      </a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="#predictor">Predictor</a></li>
+        <li><a href="#model">Architecture</a></li>
+        <li><a href="#education">Q8 Reference</a></li>
+        <li><a href="https://github.com/RamaVenkataCharan/ProteinSecondaryStructure-CNN-master" target="_blank" rel="noopener">GitHub ↗</a></li>
+      </ul>
+      <button class="nav-mobile-toggle" id="nav-toggle" aria-label="Toggle navigation">☰</button>
+    </div>
+  </nav>
+
+  <!-- ============ HERO ============ -->
+  <section class="hero" id="hero">
+    <div class="hero-bg-orbs">
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+      <div class="orb orb-3"></div>
+    </div>
+
+    <div class="container hero-content">
+      <div class="hero-badge">
+        <span class="dot"></span>
+        CNN-Powered Prediction Engine
+      </div>
+
+      <h1>
+        Protein Secondary<br />
+        <span class="gradient-text">Structure Predictor</span>
+      </h1>
+
+      <p class="hero-subtitle">
+        Predict the 8-state (Q8) secondary structure of proteins from amino acid sequences 
+        using a trained 1D Convolutional Neural Network.
+      </p>
+
+      <div class="hero-actions">
+        <a href="#predictor" class="btn btn-primary" id="hero-cta">
+          <span>🔬</span> Start Predicting
+        </a>
+        <a href="#model" class="btn btn-secondary">
+          <span>🏗️</span> View Architecture
+        </a>
+      </div>
+
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="stat-value">72.15%</div>
+          <div class="stat-label">Q8 Accuracy</div>
+        </div>
+        <div class="hero-stat">
+          <div class="stat-value">232K</div>
+          <div class="stat-label">Parameters</div>
+        </div>
+        <div class="hero-stat">
+          <div class="stat-value">6,133</div>
+          <div class="stat-label">Training Proteins</div>
+        </div>
+        <div class="hero-stat">
+          <div class="stat-value">8</div>
+          <div class="stat-label">Structure Classes</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PREDICTOR ============ -->
+  <section id="predictor">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-tag">🔬 Prediction Tool</span>
+        <h2>Predict <span class="gradient-text">Secondary Structure</span></h2>
+        <p>Enter an amino acid sequence to predict its Q8 secondary structure classification residue by residue.</p>
+      </div>
+
+      <div class="predictor-grid">
+        <div class="glass-card reveal">
+          <div class="input-group">
+            <label for="sequence-input">Amino Acid Sequence</label>
+            <textarea
+              id="sequence-input"
+              class="sequence-input"
+              placeholder="Enter a protein sequence using standard amino acid letters (e.g., MVLSPADKTNVKAAWGKVG...)"
+              spellcheck="false"
+              autocomplete="off"
+            ></textarea>
+          </div>
+
+          <div class="seq-info">
+            <div>
+              Length: <span class="seq-length" id="seq-length">0</span> residues
+            </div>
+            <div class="seq-validation" id="seq-validation"></div>
+          </div>
+
+          <div class="input-group">
+            <label>Try a sample sequence</label>
+            <div class="sample-sequences">
+              <button class="sample-btn" data-name="Hemoglobin β">Hemoglobin β</button>
+              <button class="sample-btn" data-name="Insulin">Insulin</button>
+              <button class="sample-btn" data-name="Lysozyme">Lysozyme</button>
+              <button class="sample-btn" data-name="GFP (partial)">GFP</button>
+            </div>
+          </div>
+
+          <button class="btn btn-primary" id="predict-btn" style="width: 100%; justify-content: center; position: relative;">
+            <span class="btn-text">⚡ Predict Structure</span>
+          </button>
+
+          <!-- DNA Helix Spinner -->
+          <div class="dna-spinner" id="dna-spinner">
+            <div class="strand"></div>
+            <div class="strand"></div>
+            <div class="strand"></div>
+            <div class="strand"></div>
+            <div class="strand"></div>
+            <div class="strand"></div>
+            <div class="strand"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ RESULTS ============ -->
+  <section id="results">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">📊 Results</span>
+        <h2>Structure <span class="gradient-text">Prediction</span></h2>
+      </div>
+
+      <!-- Stats cards -->
+      <div class="results-grid">
+        <div class="stat-card helix">
+          <div class="stat-icon">🌀</div>
+          <div class="stat-value" id="helix-percent">0.0%</div>
+          <div class="stat-label">Alpha Helix (H, G, I)</div>
+        </div>
+        <div class="stat-card sheet">
+          <div class="stat-icon">⟿</div>
+          <div class="stat-value" id="sheet-percent">0.0%</div>
+          <div class="stat-label">Beta Sheet (E, B)</div>
+        </div>
+        <div class="stat-card coil">
+          <div class="stat-icon">〰️</div>
+          <div class="stat-value" id="coil-percent">0.0%</div>
+          <div class="stat-label">Coil / Turn (T, S, L)</div>
+        </div>
+      </div>
+
+      <!-- Sequence / Structure Alignment -->
+      <div class="glass-card structure-strip-container">
+        <h3>🧬 Sequence ↔ Structure Alignment</h3>
+        <div class="alignment-view" id="alignment-view">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Q8 Distribution Bar Chart -->
+      <div class="glass-card chart-container">
+        <h3>📈 Q8 State Distribution</h3>
+        <div class="bar-chart" id="bar-chart">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ MODEL ARCHITECTURE ============ -->
+  <section id="model">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-tag">🏗️ Architecture</span>
+        <h2>CNN Model <span class="gradient-text">Design</span></h2>
+        <p>A 1D Convolutional Neural Network with BatchNormalization and Dropout, trained on CullPDB protein profiles.</p>
+      </div>
+
+      <div class="model-grid reveal">
+        <!-- Architecture diagram -->
+        <div class="glass-card">
+          <h3 style="margin-bottom: 24px; font-size: 1rem;">Network Topology</h3>
+          <div class="arch-diagram">
+            <div class="arch-layer input">📥 Input: (17 × 21) Window</div>
+            <div class="arch-arrow">↓</div>
+            <div class="arch-layer conv">Conv1D — 256 filters, k=7, ReLU</div>
+            <div class="arch-layer norm">BatchNormalization</div>
+            <div class="arch-layer drop">Dropout (0.38)</div>
+            <div class="arch-arrow">↓</div>
+            <div class="arch-layer conv">Conv1D — 128 filters, k=5, ReLU</div>
+            <div class="arch-layer norm">BatchNormalization</div>
+            <div class="arch-layer drop">Dropout (0.38)</div>
+            <div class="arch-arrow">↓</div>
+            <div class="arch-layer conv">Conv1D — 64 filters, k=5, ReLU</div>
+            <div class="arch-layer norm">BatchNormalization</div>
+            <div class="arch-layer drop">Dropout (0.38)</div>
+            <div class="arch-arrow">↓</div>
+            <div class="arch-layer dense">Flatten → Dense 128 → Dense 32</div>
+            <div class="arch-arrow">↓</div>
+            <div class="arch-layer output">📤 Output: 8 classes (Softmax)</div>
+          </div>
+        </div>
+
+        <!-- Model parameters -->
+        <div class="glass-card">
+          <h3 style="margin-bottom: 24px; font-size: 1rem;">Hyperparameters &amp; Results</h3>
+          <div class="model-params">
+            <div class="param-card">
+              <span class="param-name">Learning Rate</span>
+              <span class="param-value">0.0009</span>
+            </div>
+            <div class="param-card">
+              <span class="param-name">Dropout</span>
+              <span class="param-value">0.38</span>
+            </div>
+            <div class="param-card">
+              <span class="param-name">Batch Size</span>
+              <span class="param-value">64</span>
+            </div>
+            <div class="param-card">
+              <span class="param-name">Epochs</span>
+              <span class="param-value">35</span>
+            </div>
+            <div class="param-card">
+              <span class="param-name">Loss Function</span>
+              <span class="param-value">CrossEntropy</span>
+            </div>
+            <div class="param-card">
+              <span class="param-name">Optimizer</span>
+              <span class="param-value">Adam</span>
+            </div>
+            <div class="param-card">
+              <span class="param-name">Window Size</span>
+              <span class="param-value">17 residues</span>
+            </div>
+            <div class="param-card">
+              <span class="param-name">Trainable Params</span>
+              <span class="param-value">231,912</span>
+            </div>
+            <div class="param-card" style="border-color: rgba(16, 185, 129, 0.3);">
+              <span class="param-name">CullPDB Accuracy</span>
+              <span class="param-value" style="color: #34d399;">72.15%</span>
+            </div>
+            <div class="param-card" style="border-color: rgba(16, 185, 129, 0.3);">
+              <span class="param-name">CB513 Accuracy</span>
+              <span class="param-value" style="color: #34d399;">68.33%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Q8 EDUCATION ============ -->
+  <section id="education">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-tag">📚 Reference</span>
+        <h2>Q8 Structure <span class="gradient-text">Classes</span></h2>
+        <p>The DSSP algorithm classifies protein secondary structure into 8 states (Q8). Each residue is assigned one of these classes.</p>
+      </div>
+
+      <div class="q8-grid reveal">
+        <div class="q8-card" data-ss="H">
+          <div class="q8-letter">H</div>
+          <div class="q8-name">Alpha Helix</div>
+          <div class="q8-category">Helix</div>
+        </div>
+        <div class="q8-card" data-ss="G">
+          <div class="q8-letter">G</div>
+          <div class="q8-name">3₁₀ Helix</div>
+          <div class="q8-category">Helix</div>
+        </div>
+        <div class="q8-card" data-ss="I">
+          <div class="q8-letter">I</div>
+          <div class="q8-name">Pi Helix</div>
+          <div class="q8-category">Helix</div>
+        </div>
+        <div class="q8-card" data-ss="E">
+          <div class="q8-letter">E</div>
+          <div class="q8-name">Beta Strand</div>
+          <div class="q8-category">Sheet</div>
+        </div>
+        <div class="q8-card" data-ss="B">
+          <div class="q8-letter">B</div>
+          <div class="q8-name">Beta Bridge</div>
+          <div class="q8-category">Sheet</div>
+        </div>
+        <div class="q8-card" data-ss="T">
+          <div class="q8-letter">T</div>
+          <div class="q8-name">Turn</div>
+          <div class="q8-category">Coil</div>
+        </div>
+        <div class="q8-card" data-ss="S">
+          <div class="q8-letter">S</div>
+          <div class="q8-name">Bend</div>
+          <div class="q8-category">Coil</div>
+        </div>
+        <div class="q8-card" data-ss="L">
+          <div class="q8-letter">L</div>
+          <div class="q8-name">Loop / Coil</div>
+          <div class="q8-category">Coil</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <div class="footer-logo">
+        🧬 Protein<span class="gradient-text">Fold</span>
+      </div>
+      <p>Protein Secondary Structure Prediction using Convolutional Neural Networks</p>
+      <ul class="footer-links">
+        <li><a href="https://github.com/RamaVenkataCharan/ProteinSecondaryStructure-CNN-master" target="_blank" rel="noopener">GitHub</a></li>
+        <li><a href="https://arxiv.org/pdf/1403.1347.pdf" target="_blank" rel="noopener">Paper (Zhou 2014)</a></li>
+        <li><a href="https://arxiv.org/pdf/1512.00843.pdf" target="_blank" rel="noopener">Paper (Wang 2016)</a></li>
+      </ul>
+      <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 8px;">
+        &copy; 2024 — Built with 🧪 by Rama Venkata Charan. Prediction simulation uses Chou-Fasman propensity scales.
+      </p>
+    </div>
+  </footer>
+
+  <script src="index.js"></script>
+</body>
+</html>
