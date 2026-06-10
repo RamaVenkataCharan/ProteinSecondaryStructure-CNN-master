@@ -28,7 +28,6 @@ GitHub Repository:
 * Modular and easy-to-understand code structure
 
 ---
-
 ## Problem Statement
 
 Determining protein structure experimentally is expensive, time-consuming, and requires specialized laboratory equipment. Computational prediction methods provide a faster and more cost-effective alternative.
@@ -389,6 +388,10 @@ Feel free to use, modify, and extend the project with proper attribution.
 * Protein Structure Prediction Researchers
 
 ⭐ If you find this project useful, consider giving it a star on GitHub.
+
+
+
+
 
 
 
