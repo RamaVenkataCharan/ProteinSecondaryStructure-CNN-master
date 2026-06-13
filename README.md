@@ -6,7 +6,7 @@ Protein Secondary Structure Prediction (PSSP) is a fundamental task in bioinform
 
 The model processes protein sequences, converts them into numerical feature representations, and predicts secondary structure classes such as Helix (H), Sheet (E), and Coil (C). CNNs are particularly effective for this task because they can capture local dependencies and conserved motifs within protein sequences.
 
----
+---\
 
 ## Project Repository
 
