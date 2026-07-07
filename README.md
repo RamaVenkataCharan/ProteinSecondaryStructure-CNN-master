@@ -17,7 +17,7 @@ GitHub Repository:
 ---
 
 ## Features
-
+  
 * Protein sequence preprocessing and encoding
 * Deep learning-based CNN architecture
 * Automatic feature extraction
