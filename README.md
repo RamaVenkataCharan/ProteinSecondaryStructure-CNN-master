@@ -21,7 +21,7 @@ GitHub Repository:
 * Protein sequence preprocessing and encoding
 * Deep learning-based CNN architecture
 * Automatic feature extraction
-* Secondary structure prediction
+* Secondary structure prediction.     
 * Training and evaluation pipeline
 * Accuracy and performance monitoring
 * Ready for further research and deployment
