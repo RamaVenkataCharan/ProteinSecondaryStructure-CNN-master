@@ -15,7 +15,7 @@ GitHub Repository:
 **https://github.com/RamaVenkataCharan/ProteinSecondaryStructure-CNN-master**
 
 ---
-
+        
 ## Features
   
 * Protein sequence preprocessing and encoding
