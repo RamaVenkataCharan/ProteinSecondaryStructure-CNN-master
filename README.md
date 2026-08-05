@@ -1,397 +1,192 @@
-# Protein Secondary Structure Prediction Using CNN
+# Protein Secondary Structure Predictor (CNN)
 
-## Overview
+Predict protein secondary structure (Q8) from amino-acid sequences using a Convolutional Neural Network (CNN). This repository contains code for data preparation, model definition, training, evaluation and sequence-level prediction — suitable for research and educational experiments in protein structure prediction.
 
-Protein Secondary Structure Prediction (PSSP) is a fundamental task in bioinformatics that aims to predict the local three-dimensional structure of proteins directly from their amino acid sequences. This project utilizes a Convolutional Neural Network (CNN) architecture to automatically learn sequence patterns and structural relationships from protein sequence data.
+## Quick summary
+- Predicts 8-state secondary structure labels (Q8): L, B, E, G, I, H, S, T
+- Uses windowed 1D-CNNs on per-residue features (protein profiles preferred)
+- Original implementation targets TensorFlow 1.x / Keras and the CullPDB / CB513 datasets
 
-The model processes protein sequences, converts them into numerical feature representations, and predicts secondary structure classes such as Helix (H), Sheet (E), and Coil (C). CNNs are particularly effective for this task because they can capture local dependencies and conserved motifs within protein sequences.
-
----\
-
-## Project Repository
-
-GitHub Repository:
-
-**https://github.com/RamaVenkataCharan/ProteinSecondaryStructure-CNN-master**
+## Status / Compatibility
+- Language: Python (code written for Python 3.x; tested historically with Python 3.6/3.7)
+- Frameworks: TensorFlow 1.15 (tensorflow-gpu==1.15.4) + Keras 2.3.1 (see requirements)
+- If you want to run on modern TF 2.x, porting changes are necessary (tensorflow.keras API differences, model saving/loading behaviors, etc.)
+- The repository includes example training histories and exported model checkpoint files.
 
 ---
-        
+
 ## Features
-  
-* Protein sequence preprocessing and encoding
-* Deep learning-based CNN architecture
-* Automatic feature extraction
-* Secondary structure prediction.     
-* Training and evaluation pipeline
-* Accuracy and performance monitoring
-* Ready for further research and deployment
-* Modular and easy-to-understand code structure
-
----
-## Problem Statement
-
-Determining protein structure experimentally is expensive, time-consuming, and requires specialized laboratory equipment. Computational prediction methods provide a faster and more cost-effective alternative.
-
-This project aims to predict protein secondary structures directly from amino acid sequences using Convolutional Neural Networks.
+- Data preprocessing and reshaping utilities for CullPDB/CB513 datasets
+- CNN model architecture for window and whole-protein prediction
+- Training loop with TensorBoard logging and checkpointing
+- Scripts for evaluation and sequence-level prediction
+- Utilities for plotting training history
 
 ---
 
-## Objectives
+## Repository layout (important files)
+ProteinSecondaryStructure-CNN-master/
+  ├── ProteinSecondaryStructure-CNN-master/   # primary Python package and scripts
+  │   ├── dataset.py           # dataset loaders / preprocessing
+  │   ├── model.py             # CNN model definition & callbacks
+  │   ├── main.py              # training entrypoint
+  │   ├── evaluate.py          # evaluation script
+  │   ├── predict.py           # single-sequence prediction utility
+  │   ├── plot_history.py      # plot training history
+  │   ├── download_dataset.py  # helper to download dataset files (where available)
+  │   ├── requirements.txt     # expected package versions (TF 1.x / Keras 2.x)
+  │   └── images/              # dataset / doc images
+  ├── README.md                # (this file)
+  └── LICENSE
 
-* Predict protein secondary structure accurately.
-* Learn sequence patterns automatically using CNN.
-* Reduce dependency on handcrafted features.
-* Improve prediction efficiency using deep learning.
-* Provide a scalable framework for future enhancements.
+How it fits together:
+- dataset.py provides functions to load and reshape the raw numpy datasets into training/validation/test arrays and exposes constants used by model.py (cnn_width, amino_acid_residues, num_classes, filtered).
+- model.py builds a Keras Sequential CNN and sets training hyperparameters and callbacks.
+- main.py orchestrates dataset loading, model training and evaluation, and writes training history.
+- predict.py encodes a raw amino-acid string, windows it, and runs the saved model to output a Q8 label string.
 
 ---
 
 ## Dataset
+This project uses the ICML2014-related datasets (CullPDB, CB513) originally distributed with the paper:
+- Dataset download pointers (historical / archival):
+  - http://www.princeton.edu/~jzthree/datasets/ICML2014/
+  - See dataset/README.md for the expected numpy file names.
 
-The model is trained on protein sequence datasets where:
+Files expected (examples):
+- `cullpdb+profile_6133.npy` or `cullpdb+profile_6133_filtered.npy`
+- `cb513+profile_split1.npy`
 
-### Input
-
-Protein amino acid sequences.
-
-Example:
-MKTAYIAKQRQISFVKSHFSRQLEERLGLIEVQ
-
-### Output
-
-Predicted secondary structure labels.
-
-Example:
-HHHHHHCCCEEEECCCHHHHHCCCCCCCCC
-
-Where:
-
-* H = Alpha Helix
-* E = Beta Sheet
-* C = Coil
+Notes:
+- Input arrays are (N proteins × k features) and are typically reshaped to (N × 700 × 57).
+- Among 57 features: amino-acid one-hot/profile encodings, secondary structure labels, solvent accessibility, sequence profile (see dataset/README.md).
+- If you use the filtered dataset variant, set the code to use the filtered path (dataset module exposes `is_filtered()`).
 
 ---
 
-## Technology Stack
+## Install and prepare environment
 
-### Programming Language
+Recommended: use a virtual environment with Python 3.6–3.8 for compatibility with the provided requirements.
 
-* Python 3.11+
-
-### Deep Learning Framework
-
-* PyTorch
-
-### Machine Learning Libraries
-
-* NumPy
-* Pandas
-* Scikit-learn
-
-### Development Tools
-
-* Jupyter Notebook
-* VS Code
-* Git
-* GitHub
-
----
-
-## CNN Architecture
-
-The model follows the workflow below:
-
-Protein Sequence
-↓
-Sequence Encoding
-↓
-Embedding Layer
-↓
-Convolutional Layers
-↓
-Feature Extraction
-↓
-Pooling Layer
-↓
-Fully Connected Layers
-↓
-Softmax Classifier
-↓
-Secondary Structure Prediction
-
-### Why CNN?
-
-CNNs are effective because they:
-
-* Capture local sequence patterns.
-* Learn conserved motifs automatically.
-* Reduce manual feature engineering.
-* Train efficiently on large datasets.
-* Achieve strong performance in sequence classification tasks.
-
----
-
-## Project Workflow
-
-### Step 1: Data Collection
-
-Obtain protein sequences and corresponding secondary structure labels.
-
-### Step 2: Data Preprocessing
-
-* Remove invalid entries
-* Encode amino acids numerically
-* Normalize data
-* Create train/test splits
-
-### Step 3: Model Training
-
-* Build CNN architecture
-* Train using protein sequence data
-* Optimize weights using backpropagation
-
-### Step 4: Evaluation
-
-Measure model performance using:
-
-* Accuracy
-* Precision
-* Recall
-* F1 Score
-
-### Step 5: Prediction
-
-Predict secondary structures for unseen protein sequences.
-
----
-
-## Installation
-
-### Clone Repository
-
+Clone repository:
 ```bash
 git clone https://github.com/RamaVenkataCharan/ProteinSecondaryStructure-CNN-master.git
-
-cd ProteinSecondaryStructure-CNN-master
+cd ProteinSecondaryStructure-CNN-master/ProteinSecondaryStructure-CNN-master
 ```
 
-### Create Virtual Environment
-
+Create and activate virtualenv:
 ```bash
-python -m venv venv
-```
-
-### Activate Environment
-
-Windows:
-
-```bash
-venv\Scripts\activate
-```
-
-Linux/Mac:
-
-```bash
+python3 -m venv venv
+# Linux / macOS
 source venv/bin/activate
+# Windows
+# venv\Scripts\activate
 ```
 
-### Install Dependencies
-
+Install dependencies:
 ```bash
+# The provided requirements.txt targets TensorFlow 1.x and Keras 2.x
 pip install -r requirements.txt
 ```
 
+If you need to run on TF 2.x, consider:
+- Creating a separate branch and porting model / training code to tf.keras (or use `tf.compat.v1` shims, not recommended long-term).
+- Updating/locking modern compatible versions: numpy, scikit-learn, matplotlib, tensorflow.
+
 ---
 
-## Running the Project
+## Download dataset
+Follow the dataset/README.md instructions. Example (manual):
+1. Download `cullpdb+profile_6133.npy.gz` and `cb513+profile_split1.npy.gz` (or filtered variants).
+2. Place the unzipped `.npy` files into `ProteinSecondaryStructure-CNN-master/dataset/` or follow expected dataset paths used by `dataset.py`.
 
-### Train the Model
+There is a helper `download_dataset.py` (try it after inspecting/adjusting the download URLs).
 
+---
+
+## Run training, evaluation and prediction
+
+All commands assume you are in the subdirectory:
+cd ProteinSecondaryStructure-CNN-master/ProteinSecondaryStructure-CNN-master
+
+Train (default params in code):
 ```bash
-python train.py
+python main.py
 ```
+- main.py will load dataset (filtered vs. non-filtered behavior controlled inside `dataset.py`), build the model from `model.py`, and fit for `nn_epochs` epochs (default 35).
+- Training logs and TensorBoard directory are created under `logs/`.
 
-### Evaluate the Model
-
+Evaluate (scripted evaluation):
 ```bash
 python evaluate.py
 ```
+- evaluate.py loads model checkpoints (see `model.checkpoint` values) and computes metrics.
 
-### Predict New Sequences
-
+Predict single sequence:
 ```bash
 python predict.py
 ```
-
----
-
-## Model Performance
-
-### Current Performance
-
-The exact accuracy depends on:
-
-* Dataset size
-* Data preprocessing
-* Hyperparameter tuning
-* Training epochs
-
-### Expected CNN Performance
-
-Typical CNN-based Protein Secondary Structure Prediction models achieve:
-
-| Metric    | Expected Range |
-| --------- | -------------- |
-| Accuracy  | 70% – 85%      |
-| Precision | 70% – 85%      |
-| Recall    | 70% – 85%      |
-| F1 Score  | 70% – 85%      |
-
-### Note
-
-To obtain the actual accuracy of this repository, train the model and evaluate it on the test dataset.
-
-Example:
-
-```text
-Training Accuracy : XX.XX%
-Validation Accuracy : XX.XX%
-Test Accuracy : XX.XX%
+Or programmatically:
+```python
+from predict import predict_structure
+structure = predict_structure("MVLSPADKTNVKAAW...")
+print(structure)  # Q8 label string
 ```
+- `predict.py` uses one-hot encoding and sliding windows to call the saved Keras model and returns Q8 predicted labels.
 
-Replace the values with your experimental results.
-
----
-
-## Future Improvements
-
-### 1. CNN + BiLSTM
-
-Benefits:
-
-* Capture local and long-range dependencies.
-* Better sequence understanding.
-
-### 2. CNN + Attention
-
-Benefits:
-
-* Focus on important amino acids.
-* Improved prediction accuracy.
-
-### 3. Transformer-Based Models
-
-Examples:
-
-* ESM-2
-* ProtBERT
-* ProtT5
-
-Benefits:
-
-* State-of-the-art performance.
-* Better contextual understanding.
-
-### 4. Hybrid Architecture
-
-CNN + BiLSTM + Attention
-
-Expected Benefits:
-
-* Higher accuracy
-* Better generalization
-* Improved feature extraction
+Notes on model file paths:
+- Check `model.py` for the checkpoint filename (it sets `filepath` depending on `dataset.filtered`). Adjust `predict.py` or move saved model to the expected path if necessary.
 
 ---
 
-## Research Extensions
-
-Potential Final Year Project Extensions:
-
-### Advanced Protein Secondary Structure Prediction using CNN-BiLSTM-Attention
-
-Additional Features:
-
-* Attention mechanism
-* Transfer learning
-* Transformer embeddings
-* Protein visualization
-* Web-based prediction portal
-* Explainable AI (XAI)
+## Model architecture (brief)
+- Input: window of residues (default `cnn_width`; see dataset.py)
+- Several Conv1D layers with BatchNormalization and Dropout
+- Flatten → Dense(128) → Dense(32) → Dense(num_classes, softmax)
+- Loss: categorical_crossentropy (metrics: accuracy, MAE)
+- Typical hyperparameters are declared in `model.py` (LR, dropout, batch size, epochs)
 
 ---
 
-## Folder Structure
-
-```text
-ProteinSecondaryStructure-CNN-master/
-│
-├── dataset/
-├── models/
-├── notebooks/
-├── train.py
-├── evaluate.py
-├── predict.py
-├── requirements.txt
-├── README.md
-└── saved_models/
-```
+## Expected performance
+- Reported Q8 accuracy in this repository: ~0.72 (window-CNN on CullPDB split)
+- Performance depends heavily on dataset split, filtering, preprocessing and hyperparameter tuning — reproduce exact numbers by running the training & evaluation sequence.
 
 ---
 
-## Applications
-
-* Drug Discovery
-* Protein Engineering
-* Bioinformatics Research
-* Disease Analysis
-* Genomics
-* Computational Biology
-
----
-
-## Author
-
-### Mekala Rama Venkata Charan
-
-B.Tech – Computer Science and Engineering
-
-Skills:
-
-* Python
-* AI/ML
-* Deep Learning
-* Bioinformatics
-* Web Development
-
-GitHub:
-https://github.com/RamaVenkataCharan
-
-LinkedIn:
-https://www.linkedin.com/in/rama-venkata-charan-ba0a592b9
+## Troubleshooting & tips
+- TensorFlow 1.x: the code was written for TF 1.15 + Keras 2.3.1. If you install TF 2.x, you may need to:
+  - Replace keras imports with `tensorflow.keras` (some are already `tensorflow.keras` but other TF-1 idioms may remain)
+  - Update model saving/loading calls and callbacks
+- GPU: If using GPU, install `tensorflow-gpu==1.15.4` and the compatible CUDA/CuDNN versions (per TF 1.15 docs).
+- Batch size and window width are declared in `model.py` and `dataset.py`. Tune them for memory constraints.
+- If you get shape-mismatch or padding-related errors, inspect `dataset.py` and the expected reshape logic (700 × 57) and ensure input `.npy` files are in the expected format.
 
 ---
 
-## License
-
-This project is intended for educational and research purposes.
-
-Feel free to use, modify, and extend the project with proper attribution.
+## Contributing
+- If you want to modernize the code:
+  - Port to TensorFlow 2.x and tf.keras (rename or update imports, check checkpoint formats)
+  - Add unit tests for data loaders and encoding functions
+  - Provide preprocessed, smaller example dataset (for quick reproducibility)
+  - Add a Dockerfile or environment.yml for reproducible runs
+- Please open issues or PRs on the project repository. See `contribution.txt` for minor notes.
 
 ---
 
-## Acknowledgements
+## Author & License
+Author: Mekala Rama Venkata Charan  
+License: MIT / educational & research usage (see LICENSE file in repo)
 
-* PyTorch Team
-* Bioinformatics Research Community
-* Open Source Contributors
-* Protein Structure Prediction Researchers
+---
 
-⭐ If you find this project useful, consider giving it a star on GitHub.
+## Useful links & references
+- Dataset origin: http://www.princeton.edu/~jzthree/datasets/ICML2014/
+- Relevant literature:
+  - Jian Zhou and Olga Troyanskaya (2014). Deep Supervised and Convolutional Generative Stochastic Network for Protein Secondary Structure Prediction.
+  - Sheng Wang et al. (2016). Protein Secondary Structure Prediction Using Deep Convolutional Neural Fields.
 
-
-
-
-
-
-
+If you'd like, I can:
+- Create this README.md as a PR/commit in the repo,
+- Modernize the code to TF 2.x and update requirements,
+- Add an example small dataset and a short Jupyter notebook demonstrating prediction end-to-end.
