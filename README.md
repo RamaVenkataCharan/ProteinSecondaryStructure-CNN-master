@@ -31,7 +31,7 @@ ProteinSecondaryStructure-CNN-master/
   │   ├── model.py             # CNN model definition & callbacks
   │   ├── main.py              # training entrypoint
   │   ├── evaluate.py          # evaluation script
-  │   ├── predict.py           # single-sequence prediction utility
+  │   ├── predict.py           # single-sequence prediction utility.            
   │   ├── plot_history.py      # plot training history
   │   ├── download_dataset.py  # helper to download dataset files (where available)
   │   ├── requirements.txt     # expected package versions (TF 1.x / Keras 2.x)
